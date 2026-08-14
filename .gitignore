@@ -11,6 +11,9 @@
 # testing
 /coverage
 
+# brainstorm / local agent artifacts
+.superpowers/
+
 # next.js
 /.next/
 /out/
