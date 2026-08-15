@@ -91,19 +91,155 @@ export function classifyHiloPoints(
   })
 }
 
+export const TIDE_GRAPHIC_WIDTH = 100
+export const TIDE_GRAPHIC_HEIGHT = 36
+
+export type TideGraphicMarker = {
+  x: number
+  y: number
+  kind: TideExtremum["kind"]
+  eventAt: string
+  heightFeet: number
+}
+
+export type TideGraphic = {
+  linePath: string
+  areaPath: string
+  now: { x: number; y: number } | null
+  markers: TideGraphicMarker[]
+  trend: "rising" | "falling" | null
+}
+
+function cosineInterpolate(start: number, end: number, t: number): number {
+  const mu = (1 - Math.cos(t * Math.PI)) / 2
+  return start * (1 - mu) + end * mu
+}
+
+function sampleTideCurve(
+  extrema: readonly TideExtremum[],
+  stepsPerSpan = 12
+): Array<{ at: number; heightFeet: number }> {
+  if (extrema.length === 0) {
+    return []
+  }
+
+  const samples: Array<{ at: number; heightFeet: number }> = [
+    {
+      at: new Date(extrema[0]!.eventAt).getTime(),
+      heightFeet: extrema[0]!.heightFeet,
+    },
+  ]
+
+  for (let index = 1; index < extrema.length; index++) {
+    const previous = extrema[index - 1]!
+    const current = extrema[index]!
+    const start = new Date(previous.eventAt).getTime()
+    const end = new Date(current.eventAt).getTime()
+    const span = end - start
+    if (span <= 0) {
+      continue
+    }
+
+    for (let step = 1; step <= stepsPerSpan; step++) {
+      const t = step / stepsPerSpan
+      samples.push({
+        at: start + span * t,
+        heightFeet: cosineInterpolate(
+          previous.heightFeet,
+          current.heightFeet,
+          t
+        ),
+      })
+    }
+  }
+
+  return samples
+}
+
+function heightToY(
+  heightFeet: number,
+  minHeight: number,
+  maxHeight: number
+): number {
+  const range = Math.max(maxHeight - minHeight, 1)
+  const normalized = (heightFeet - minHeight) / range
+  return TIDE_GRAPHIC_HEIGHT - 3 - normalized * (TIDE_GRAPHIC_HEIGHT - 6)
+}
+
+export function buildTideGraphic(
+  extrema: readonly TideExtremum[],
+  now: Date
+): TideGraphic | null {
+  if (extrema.length < 2) {
+    return null
+  }
+
+  const samples = sampleTideCurve(extrema)
+  const times = samples.map((sample) => sample.at)
+  const minTime = Math.min(...times)
+  const maxTime = Math.max(...times)
+  const span = Math.max(maxTime - minTime, 1)
+  const heights = extrema.map((point) => point.heightFeet)
+  const minHeight = Math.min(...heights)
+  const maxHeight = Math.max(...heights)
+
+  const toX = (at: number) => ((at - minTime) / span) * TIDE_GRAPHIC_WIDTH
+  const toY = (heightFeet: number) =>
+    heightToY(heightFeet, minHeight, maxHeight)
+
+  const linePath = samples
+    .map((sample, index) => {
+      const command = index === 0 ? "M" : "L"
+      return `${command}${toX(sample.at).toFixed(2)},${toY(sample.heightFeet).toFixed(2)}`
+    })
+    .join(" ")
+
+  const areaPath = `${linePath} L${TIDE_GRAPHIC_WIDTH},${TIDE_GRAPHIC_HEIGHT} L0,${TIDE_GRAPHIC_HEIGHT} Z`
+
+  const nowMs = now.getTime()
+  let nowPoint: TideGraphic["now"] = null
+  if (nowMs >= minTime && nowMs <= maxTime) {
+    const afterIndex = samples.findIndex((sample) => sample.at >= nowMs)
+    const after = samples[afterIndex] ?? samples.at(-1)!
+    const before = samples[Math.max(afterIndex - 1, 0)]!
+    const localSpan = after.at - before.at
+    const t = localSpan === 0 ? 0 : (nowMs - before.at) / localSpan
+    nowPoint = {
+      x: toX(before.at + localSpan * t),
+      y: toY(cosineInterpolate(before.heightFeet, after.heightFeet, t)),
+    }
+  }
+
+  const next = extrema.find((point) => new Date(point.eventAt) > now)
+
+  return {
+    linePath,
+    areaPath,
+    now: nowPoint,
+    markers: extrema.map((point) => ({
+      x: toX(new Date(point.eventAt).getTime()),
+      y: toY(point.heightFeet),
+      kind: point.kind,
+      eventAt: point.eventAt,
+      heightFeet: point.heightFeet,
+    })),
+    trend: next ? (next.kind === "high" ? "rising" : "falling") : null,
+  }
+}
+
 export function pickNextTide(
   points: readonly IwlsHiloPoint[],
   now: Date,
   fetchedAt: Date
 ): TideLayer {
-  const future = classifyHiloPoints(points).filter(
-    (point) => new Date(point.eventAt) > now
-  )
+  const extrema = classifyHiloPoints(points)
+  const future = extrema.filter((point) => new Date(point.eventAt) > now)
 
   return {
     source: "CHS Squamish Inner",
     stationCode: SQUAMISH_INNER_STATION_CODE,
     fetchedAt: fetchedAt.toISOString(),
+    extrema,
     nextLow: future.find((point) => point.kind === "low") ?? null,
     nextHigh: future.find((point) => point.kind === "high") ?? null,
   }

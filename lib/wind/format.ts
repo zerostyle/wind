@@ -23,6 +23,58 @@ export function degreesToCompass(degrees: number): string {
   return COMPASS[index]!
 }
 
+export type DirectionSample = {
+  time: Date
+  directionDegrees?: number
+}
+
+export type DirectionMarker = {
+  time: Date
+  directionDegrees: number
+}
+
+export function normalizeDegrees(degrees: number): number {
+  return ((degrees % 360) + 360) % 360
+}
+
+export function circularAngleDelta(a: number, b: number): number {
+  const raw = Math.abs(normalizeDegrees(a) - normalizeDegrees(b))
+  return Math.min(raw, 360 - raw)
+}
+
+export function flowHeadingDegrees(fromDegrees: number): number {
+  return normalizeDegrees(fromDegrees + 180)
+}
+
+const DEFAULT_DIRECTION_THRESHOLD_DEGREES = 15
+const DEFAULT_DIRECTION_MIN_INTERVAL_MS = 20 * 60 * 1000
+
+export function selectDirectionMarkers(
+  samples: readonly DirectionSample[],
+  thresholdDegrees = DEFAULT_DIRECTION_THRESHOLD_DEGREES,
+  minIntervalMs = DEFAULT_DIRECTION_MIN_INTERVAL_MS
+): DirectionMarker[] {
+  const markers: DirectionMarker[] = []
+
+  for (const sample of samples) {
+    const degrees = sample.directionDegrees
+    if (degrees === undefined || !Number.isFinite(degrees)) {
+      continue
+    }
+
+    const last = markers.at(-1)
+    if (
+      last === undefined ||
+      (circularAngleDelta(last.directionDegrees, degrees) >= thresholdDegrees &&
+        sample.time.getTime() - last.time.getTime() >= minIntervalMs)
+    ) {
+      markers.push({ time: sample.time, directionDegrees: degrees })
+    }
+  }
+
+  return markers
+}
+
 export function formatFixed(value: number | undefined, digits = 1): string {
   if (value === undefined || !Number.isFinite(value)) {
     return "—"

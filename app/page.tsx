@@ -25,6 +25,7 @@ export default async function Page({
         averageKnots: sample.averageKnots,
         gustKnots: sample.gustKnots,
         lullKnots: sample.lullKnots,
+        directionDegrees: sample.directionDegrees,
       }))
     : []
 

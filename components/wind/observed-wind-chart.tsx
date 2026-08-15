@@ -1,12 +1,17 @@
 "use client"
 
 import { useMemo } from "react"
-import { defineChart, lineY, areaY } from "@tanstack/charts"
+import { defineChart, lineY, areaY, ruleY, vector } from "@tanstack/charts"
 import { scaleLinear } from "@tanstack/charts/scales/linear"
 import { tooltip } from "@tanstack/charts/tooltip"
 import { Chart } from "@tanstack/charts/react"
 import { scaleUtc } from "d3-scale"
 import { useTheme } from "next-themes"
+import {
+  degreesToCompass,
+  flowHeadingDegrees,
+  selectDirectionMarkers,
+} from "@/lib/wind/format"
 
 function readThemeColor(name: string, fallback: string) {
   if (typeof document === "undefined") {
@@ -24,6 +29,7 @@ export type ChartSample = {
   averageKnots: number
   gustKnots: number
   lullKnots: number
+  directionDegrees?: number
 }
 
 type ObservedWindChartProps = {
@@ -37,10 +43,20 @@ export function ObservedWindChart({ samples }: ObservedWindChartProps) {
     const observed = readThemeColor("--observed", "#5ecde1")
     const muted = readThemeColor("--muted-foreground", "#8f9aa3")
     const foreground = readThemeColor("--foreground", "#f3f5f4")
-    const border = readThemeColor("--border", "#2a3035")
+    const directionMarks = selectDirectionMarkers(samples).map((marker) => ({
+      time: marker.time,
+      plotKnots: 38,
+      rotate: flowHeadingDegrees(marker.directionDegrees),
+    }))
 
     return defineChart({
       marks: [
+        ruleY([10, 20, 30, 40], {
+          id: "knot-guides",
+          stroke: muted,
+          strokeWidth: 1,
+          strokeOpacity: 0.25,
+        }),
         areaY(samples, {
           id: "gust-lull-band",
           x: "time",
@@ -70,6 +86,18 @@ export function ObservedWindChart({ samples }: ObservedWindChartProps) {
           stroke: observed,
           strokeWidth: 2.5,
         }),
+        vector(directionMarks, {
+          id: "direction",
+          x: "time",
+          y: "plotKnots",
+          rotate: "rotate",
+          length: 14,
+          stroke: observed,
+          strokeWidth: 1.5,
+          headLength: 6,
+          headAngle: 40,
+          anchor: "middle",
+        }),
       ],
       x: {
         scale: scaleUtc,
@@ -81,16 +109,35 @@ export function ObservedWindChart({ samples }: ObservedWindChartProps) {
       y: {
         scale: scaleLinear().domain([0, 40]),
         nice: false,
-        grid: true,
+        grid: false,
         axis: {
           label: "Knots",
+          ticks: { values: [0, 10, 20, 30, 40] },
         },
       },
-      tooltip,
+      tooltip: {
+        use: tooltip,
+        items: [
+          "x",
+          "y",
+          {
+            id: "direction",
+            label: "Direction",
+            text: (point) => {
+              const degrees = (point.datum as ChartSample | undefined)
+                ?.directionDegrees
+              if (degrees === undefined || !Number.isFinite(degrees)) {
+                return undefined
+              }
+
+              return `${degreesToCompass(degrees)} ${Math.round(degrees)}°`
+            },
+          },
+        ],
+      },
       theme: {
         background: "transparent",
         foreground: muted,
-        grid: border,
       },
     })
   }, [samples, resolvedTheme])

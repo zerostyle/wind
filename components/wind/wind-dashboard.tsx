@@ -2,6 +2,7 @@ import { ThemeSwitch } from "@/components/theme-switch"
 import { ConditionsStrip } from "@/components/wind/conditions-strip"
 import { ObservationDateNav } from "@/components/wind/observation-date-nav"
 import { ObservedWindChartLazy } from "@/components/wind/observed-wind-chart-lazy"
+import { WindDirectionCompass } from "@/components/wind/wind-direction-compass"
 import {
   degreesToCompass,
   formatKnots,
@@ -50,11 +51,6 @@ export function WindDashboard({
     peakStart && peakEnd && peakStart !== peakEnd
       ? `${peakStart}–${peakEnd}`
       : peakStart
-  const direction =
-    reading?.directionDegrees !== undefined
-      ? `${degreesToCompass(reading.directionDegrees)} ${Math.round(reading.directionDegrees)}°`
-      : "—"
-
   return (
     <main className="min-h-svh overflow-x-hidden bg-background text-foreground">
       <div className="mx-auto flex min-h-svh w-full max-w-[1440px] flex-col gap-4 px-5 py-6 min-[1440px]:h-[900px] min-[1440px]:min-h-[900px] md:px-8">
@@ -95,11 +91,6 @@ export function WindDashboard({
             <ThemeSwitch />
           </div>
         </header>
-
-        <ConditionsStrip
-          temperatureCelsius={reading?.temperatureCelsius}
-          tide={snapshot.tide}
-        />
 
         <div className="grid min-h-0 flex-1 gap-6 min-[1440px]:grid-cols-[minmax(0,824px)_minmax(0,528px)]">
           <section className="flex min-h-0 flex-col gap-3.5 bg-card p-5 min-[1440px]:h-[464px]">
@@ -176,8 +167,10 @@ export function WindDashboard({
                     <dt className="font-mono text-[8px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
                       Direction
                     </dt>
-                    <dd className="mt-1 font-mono text-lg tabular-nums">
-                      {direction}
+                    <dd className="mt-1">
+                      <WindDirectionCompass
+                        degrees={reading?.directionDegrees}
+                      />
                     </dd>
                   </div>
                 </dl>
@@ -217,6 +210,13 @@ export function WindDashboard({
                   <span className="inline-flex items-center gap-1.5">
                     <span className="h-px w-2.5 bg-muted-foreground" />
                     Lull
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span
+                      className="inline-block size-0 border-x-[3px] border-b-[5px] border-x-transparent border-b-observed"
+                      aria-hidden="true"
+                    />
+                    Arrow = flow
                   </span>
                 </div>
               </div>
@@ -473,6 +473,12 @@ export function WindDashboard({
             </p>
           </section>
         </div>
+
+        <ConditionsStrip
+          temperatureCelsius={reading?.temperatureCelsius}
+          tide={snapshot.tide}
+          now={snapshot.fetchedAt}
+        />
       </div>
     </main>
   )

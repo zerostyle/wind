@@ -38,9 +38,9 @@ export function parseSwsPayload(payload: SwsPayload): WindSample[] {
       directionDegrees,
     }
 
-    const temperatureCelsius = Number(payload.t?.[index])
-    if (Number.isFinite(temperatureCelsius)) {
-      sample.temperatureCelsius = temperatureCelsius
+    const temperatureTenths = Number(payload.t?.[index])
+    if (Number.isFinite(temperatureTenths)) {
+      sample.temperatureCelsius = temperatureTenths / 10
     }
 
     samples.push(sample)

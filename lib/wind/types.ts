@@ -54,8 +54,7 @@ export type KiteHint = {
 }
 
 export type SourceResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; error: string }
+  { ok: true; data: T } | { ok: false; error: string }
 
 export type ForecastHour = {
   validAt: string
@@ -91,6 +90,7 @@ export type TideLayer = {
   source: "CHS Squamish Inner"
   stationCode: "07811"
   fetchedAt: string
+  extrema: TideExtremum[]
   nextLow: TideExtremum | null
   nextHigh: TideExtremum | null
 }

@@ -47,18 +47,18 @@ describe("parseSwsPayload", () => {
     ])
   })
 
-  it("attaches temperatureCelsius when t is a valid number", () => {
+  it("converts SWS tenths-of-a-degree t values to celsius", () => {
     const samples = parseSwsPayload({
       dt: ["100", "200"],
       ws: ["10", "11"],
       wg: ["12", "13"],
       wl: ["8", "9"],
       wd: ["180", "190"],
-      t: ["17.2", "16.8"],
+      t: ["173", "168"],
     })
 
     expect(samples.map((sample) => sample.temperatureCelsius)).toEqual([
-      17.2, 16.8,
+      17.3, 16.8,
     ])
   })
 
@@ -69,7 +69,7 @@ describe("parseSwsPayload", () => {
       wg: ["12", "13", "14"],
       wl: ["8", "9", "10"],
       wd: ["180", "190", "200"],
-      t: ["17.2", "nope"],
+      t: ["172", "nope"],
     })
 
     expect(samples).toHaveLength(3)
