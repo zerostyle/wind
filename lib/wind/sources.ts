@@ -2,6 +2,7 @@ import { isStaleObservation, vancouverDateKey } from "./freshness"
 import { getKiteHint } from "./kite-hint"
 import { swsObservationUrl } from "./observation-date"
 import { newestSample, parseSwsPayload } from "./parse-sws"
+import { fetchTidePredictions } from "./tide"
 import type {
   ForecastHour,
   ForecastLayer,
@@ -328,10 +329,11 @@ export async function getWindSnapshot(
   reqdate: string = vancouverDateKey(now)
 ): Promise<WindSnapshot> {
   const isArchived = reqdate !== vancouverDateKey(now)
-  const [observation, forecast, marine] = await Promise.all([
+  const [observation, forecast, marine, tide] = await Promise.all([
     fetchSwsObservation(now, reqdate),
     fetchOpenMeteoForecast(),
     fetchMarineHazard(),
+    fetchTidePredictions(now),
   ])
 
   const marineData = marine.ok ? marine.data : null
@@ -346,6 +348,7 @@ export async function getWindSnapshot(
     observation,
     forecast,
     marine,
+    tide,
     kiteHint,
   }
 }

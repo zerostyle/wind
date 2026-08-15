@@ -100,5 +100,6 @@ export type WindSnapshot = {
   observation: SourceResult<ObservationLayer>
   forecast: SourceResult<ForecastLayer>
   marine: SourceResult<MarineHazard>
+  tide: SourceResult<TideLayer>
   kiteHint: KiteHint | null
 }
