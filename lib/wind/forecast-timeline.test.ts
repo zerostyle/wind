@@ -32,10 +32,7 @@ describe("getForecastTimeline", () => {
       hour("2026-08-15T06:00:00.000Z", 2, 2),
     ]
 
-    const timeline = getForecastTimeline(
-      hours,
-      "2026-08-14T20:39:00.000Z"
-    )
+    const timeline = getForecastTimeline(hours, "2026-08-14T20:39:00.000Z")
 
     expect(timeline.hours).toHaveLength(9)
     expect(timeline.hours[0]?.validAt).toBe("2026-08-14T21:00:00.000Z")
@@ -51,10 +48,7 @@ describe("getForecastTimeline", () => {
       hour("2026-08-15T01:00:00.000Z", 10, 12),
     ]
 
-    const timeline = getForecastTimeline(
-      hours,
-      "2026-08-14T20:39:00.000Z"
-    )
+    const timeline = getForecastTimeline(hours, "2026-08-14T20:39:00.000Z")
 
     expect(timeline.peak).toEqual({
       averageKnots: 10,

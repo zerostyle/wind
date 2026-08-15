@@ -4,8 +4,7 @@ import dynamic from "next/dynamic"
 import type { ChartSample } from "./observed-wind-chart"
 
 const ObservedWindChart = dynamic(
-  () =>
-    import("./observed-wind-chart").then((mod) => mod.ObservedWindChart),
+  () => import("./observed-wind-chart").then((mod) => mod.ObservedWindChart),
   {
     ssr: false,
     loading: () => (

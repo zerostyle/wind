@@ -26,9 +26,7 @@ export function getForecastTimeline(
     return { hours: [], peak: null }
   }
 
-  const peakSpeed = Math.max(
-    ...futureHours.map((hour) => hour.averageKnots)
-  )
+  const peakSpeed = Math.max(...futureHours.map((hour) => hour.averageKnots))
   const peakStart = futureHours.findIndex(
     (hour) => hour.averageKnots === peakSpeed
   )

@@ -19,13 +19,8 @@ const hourFormatter = new Intl.DateTimeFormat("en-CA", {
   hour12: true,
 })
 
-export function WindDashboard({
-  snapshot,
-  chartSamples,
-}: WindDashboardProps) {
-  const observation = snapshot.observation.ok
-    ? snapshot.observation.data
-    : null
+export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
+  const observation = snapshot.observation.ok ? snapshot.observation.data : null
   const forecast = snapshot.forecast.ok ? snapshot.forecast.data : null
   const marine = snapshot.marine.ok ? snapshot.marine.data : null
   const reading = observation?.latest ?? null
@@ -49,7 +44,7 @@ export function WindDashboard({
 
   return (
     <main className="min-h-svh overflow-x-hidden bg-[#090b0c] text-[#f3f5f4]">
-      <div className="mx-auto flex min-h-svh w-full max-w-[1440px] flex-col gap-4 px-5 py-6 md:px-8 min-[1440px]:h-[900px] min-[1440px]:min-h-[900px]">
+      <div className="mx-auto flex min-h-svh w-full max-w-[1440px] flex-col gap-4 px-5 py-6 min-[1440px]:h-[900px] min-[1440px]:min-h-[900px] md:px-8">
         <header className="flex min-h-[72px] flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="min-w-0">
             <p className="font-mono text-[10px] font-semibold tracking-[0.16em] text-[#8f9aa3] uppercase">
@@ -234,9 +229,7 @@ export function WindDashboard({
                     </p>
                     <p className="mt-1 font-mono text-[8px] tracking-[0.06em] text-[#8f9aa3] uppercase">
                       Valid{" "}
-                      {formatVancouverTime(
-                        forecast.current.observedOrValidAt
-                      )}{" "}
+                      {formatVancouverTime(forecast.current.observedOrValidAt)}{" "}
                       · 15-min model
                     </p>
                   </div>
@@ -341,9 +334,7 @@ export function WindDashboard({
               <div className="flex items-center gap-2">
                 <span
                   className={`text-base ${
-                    marine?.hasThunderRisk
-                      ? "text-[#e8b84a]"
-                      : "text-[#8f9aa3]"
+                    marine?.hasThunderRisk ? "text-[#e8b84a]" : "text-[#8f9aa3]"
                   }`}
                   aria-hidden="true"
                 >
@@ -361,9 +352,7 @@ export function WindDashboard({
                       ? "Thunderstorm risk"
                       : "No thunderstorm risk"}
                   </p>
-                  <p className="text-[11px] text-[#8f9aa3]">
-                    Marine forecast
-                  </p>
+                  <p className="text-[11px] text-[#8f9aa3]">Marine forecast</p>
                 </div>
               </div>
               <p className="flex items-center gap-2 text-[11px] text-[#c3cbd1]">
