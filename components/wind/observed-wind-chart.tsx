@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { defineChart, lineY, areaY, ruleY, vector } from "@tanstack/charts"
 import { scaleLinear } from "@tanstack/charts/scales/linear"
 import { tooltip } from "@tanstack/charts/tooltip"
@@ -36,8 +36,42 @@ type ObservedWindChartProps = {
   samples: ChartSample[]
 }
 
+const MOBILE_CHART_HEIGHT = 250
+const DESKTOP_CHART_HEIGHT = 400
+const DESKTOP_CHART_MQ = "(min-width: 768px)"
+
+const observedChartHeightClass = "h-[250px] md:h-[400px]"
+
+function getObservedChartHeight() {
+  if (typeof window === "undefined") {
+    return MOBILE_CHART_HEIGHT
+  }
+
+  return window.matchMedia(DESKTOP_CHART_MQ).matches
+    ? DESKTOP_CHART_HEIGHT
+    : MOBILE_CHART_HEIGHT
+}
+
+function useObservedChartHeight() {
+  const [height, setHeight] = useState(getObservedChartHeight)
+
+  useEffect(() => {
+    const media = window.matchMedia(DESKTOP_CHART_MQ)
+    const syncHeight = () => {
+      setHeight(media.matches ? DESKTOP_CHART_HEIGHT : MOBILE_CHART_HEIGHT)
+    }
+
+    syncHeight()
+    media.addEventListener("change", syncHeight)
+    return () => media.removeEventListener("change", syncHeight)
+  }, [])
+
+  return height
+}
+
 export function ObservedWindChart({ samples }: ObservedWindChartProps) {
   const { resolvedTheme } = useTheme()
+  const height = useObservedChartHeight()
 
   const definition = useMemo(() => {
     const observed = readThemeColor("--observed", "#5ecde1")
@@ -144,7 +178,9 @@ export function ObservedWindChart({ samples }: ObservedWindChartProps) {
 
   if (samples.length === 0) {
     return (
-      <div className="flex h-[250px] items-center justify-center text-sm text-muted-foreground">
+      <div
+        className={`flex ${observedChartHeightClass} items-center justify-center text-sm text-muted-foreground`}
+      >
         No observation samples to chart.
       </div>
     )
@@ -153,7 +189,7 @@ export function ObservedWindChart({ samples }: ObservedWindChartProps) {
   return (
     <Chart
       definition={definition}
-      height={250}
+      height={height}
       ariaLabel="Observed Spit wind average, gust, and lull in knots"
       className="w-full"
     />
