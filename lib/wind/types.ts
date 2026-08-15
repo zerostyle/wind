@@ -9,6 +9,7 @@ export type WindReading = {
   gustKnots?: number
   lullKnots?: number
   directionDegrees?: number
+  temperatureCelsius?: number
   stale: boolean
 }
 
@@ -27,6 +28,7 @@ export type WindSample = {
   gustKnots: number
   lullKnots: number
   directionDegrees: number
+  temperatureCelsius?: number
 }
 
 export type MarineHazard = {

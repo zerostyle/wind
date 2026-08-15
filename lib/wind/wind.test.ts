@@ -46,6 +46,37 @@ describe("parseSwsPayload", () => {
       100_000, 300_000,
     ])
   })
+
+  it("attaches temperatureCelsius when t is a valid number", () => {
+    const samples = parseSwsPayload({
+      dt: ["100", "200"],
+      ws: ["10", "11"],
+      wg: ["12", "13"],
+      wl: ["8", "9"],
+      wd: ["180", "190"],
+      t: ["17.2", "16.8"],
+    })
+
+    expect(samples.map((sample) => sample.temperatureCelsius)).toEqual([
+      17.2, 16.8,
+    ])
+  })
+
+  it("omits temperatureCelsius when t is missing or invalid, without dropping the sample", () => {
+    const samples = parseSwsPayload({
+      dt: ["100", "200", "300"],
+      ws: ["10", "11", "12"],
+      wg: ["12", "13", "14"],
+      wl: ["8", "9", "10"],
+      wd: ["180", "190", "200"],
+      t: ["17.2", "nope"],
+    })
+
+    expect(samples).toHaveLength(3)
+    expect(samples[0]!.temperatureCelsius).toBe(17.2)
+    expect(samples[1]!.temperatureCelsius).toBeUndefined()
+    expect(samples[2]!.temperatureCelsius).toBeUndefined()
+  })
 })
 
 describe("isStaleObservation", () => {

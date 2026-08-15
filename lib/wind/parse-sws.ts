@@ -30,13 +30,20 @@ export function parseSwsPayload(payload: SwsPayload): WindSample[] {
       continue
     }
 
-    samples.push({
+    const sample: WindSample = {
       observedAt: new Date(unixSeconds * 1000),
       averageKnots,
       gustKnots,
       lullKnots,
       directionDegrees,
-    })
+    }
+
+    const temperatureCelsius = Number(payload.t?.[index])
+    if (Number.isFinite(temperatureCelsius)) {
+      sample.temperatureCelsius = temperatureCelsius
+    }
+
+    samples.push(sample)
   }
 
   return samples

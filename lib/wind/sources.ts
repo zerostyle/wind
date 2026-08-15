@@ -84,6 +84,7 @@ export function buildObservationLayer(
     gustKnots: newest.gustKnots,
     lullKnots: newest.lullKnots,
     directionDegrees: newest.directionDegrees,
+    temperatureCelsius: newest.temperatureCelsius,
     stale: isStaleObservation(newest.observedAt, now),
   }
 
