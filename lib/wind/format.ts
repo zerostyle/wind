@@ -23,11 +23,15 @@ export function degreesToCompass(degrees: number): string {
   return COMPASS[index]!
 }
 
-export function formatKnots(value: number | undefined, digits = 1): string {
+export function formatFixed(value: number | undefined, digits = 1): string {
   if (value === undefined || !Number.isFinite(value)) {
     return "—"
   }
   return value.toFixed(digits)
+}
+
+export function formatKnots(value: number | undefined, digits = 1): string {
+  return formatFixed(value, digits)
 }
 
 export function formatVancouverTime(iso: string): string {

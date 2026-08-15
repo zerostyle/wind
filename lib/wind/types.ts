@@ -81,6 +81,20 @@ export type ObservationLayer = {
   samples: WindSample[]
 }
 
+export type TideExtremum = {
+  kind: "low" | "high"
+  eventAt: string
+  heightFeet: number
+}
+
+export type TideLayer = {
+  source: "CHS Squamish Inner"
+  stationCode: "07811"
+  fetchedAt: string
+  nextLow: TideExtremum | null
+  nextHigh: TideExtremum | null
+}
+
 export type WindSnapshot = {
   fetchedAt: string
   observation: SourceResult<ObservationLayer>
