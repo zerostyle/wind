@@ -27,29 +27,29 @@ export function ObservedWindChart({ samples }: ObservedWindChartProps) {
           x: "time",
           y1: "lullKnots",
           y2: "gustKnots",
-          fill: "#2dd4bf",
-          fillOpacity: 0.14,
+          fill: "#5ecde1",
+          fillOpacity: 0.05,
         }),
         lineY(samples, {
           id: "lull",
           x: "time",
           y: "lullKnots",
-          stroke: "#64748b",
-          strokeWidth: 1.25,
+          stroke: "#8f9aa3",
+          strokeWidth: 1,
         }),
         lineY(samples, {
           id: "gust",
           x: "time",
           y: "gustKnots",
-          stroke: "#f59e0b",
-          strokeWidth: 1.5,
+          stroke: "#f3f5f4",
+          strokeWidth: 1,
         }),
         lineY(samples, {
           id: "average",
           x: "time",
           y: "averageKnots",
-          stroke: "#5eead4",
-          strokeWidth: 2.25,
+          stroke: "#5ecde1",
+          strokeWidth: 2.5,
         }),
       ],
       x: {
@@ -70,15 +70,15 @@ export function ObservedWindChart({ samples }: ObservedWindChartProps) {
       tooltip,
       theme: {
         background: "transparent",
-        foreground: "#94a3b8",
-        grid: "#1e293b",
+        foreground: "#8f9aa3",
+        grid: "#2a3035",
       },
     })
   }, [samples])
 
   if (samples.length === 0) {
     return (
-      <div className="flex h-72 items-center justify-center text-sm text-slate-400">
+      <div className="flex h-[250px] items-center justify-center text-sm text-[#8f9aa3]">
         No observation samples to chart.
       </div>
     )
@@ -87,7 +87,7 @@ export function ObservedWindChart({ samples }: ObservedWindChartProps) {
   return (
     <Chart
       definition={definition}
-      height={288}
+      height={250}
       ariaLabel="Observed Spit wind average, gust, and lull in knots"
       className="w-full"
     />

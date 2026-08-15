@@ -9,7 +9,7 @@ const ObservedWindChart = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-72 items-center justify-center text-sm text-slate-400">
+      <div className="flex h-[250px] items-center justify-center text-sm text-[#8f9aa3]">
         Loading chart…
       </div>
     ),
