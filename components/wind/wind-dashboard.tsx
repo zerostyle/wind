@@ -1,3 +1,4 @@
+import { ThemeSwitch } from "@/components/theme-switch"
 import { ObservedWindChartLazy } from "@/components/wind/observed-wind-chart-lazy"
 import {
   degreesToCompass,
@@ -43,48 +44,51 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
       : "—"
 
   return (
-    <main className="min-h-svh overflow-x-hidden bg-[#090b0c] text-[#f3f5f4]">
+    <main className="min-h-svh overflow-x-hidden bg-background text-foreground">
       <div className="mx-auto flex min-h-svh w-full max-w-[1440px] flex-col gap-4 px-5 py-6 min-[1440px]:h-[900px] min-[1440px]:min-h-[900px] md:px-8">
         <header className="flex min-h-[72px] flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="min-w-0">
-            <p className="font-mono text-[10px] font-semibold tracking-[0.16em] text-[#8f9aa3] uppercase">
+            <p className="font-mono text-[10px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
               Squamish · Howe Sound
             </p>
-            <h1 className="mt-0.5 text-[25px] leading-tight font-semibold tracking-[-0.02em] text-[#f3f5f4]">
+            <h1 className="mt-0.5 text-[25px] leading-tight font-semibold tracking-[-0.02em] text-foreground">
               Pepahím̓ / The Spit
             </h1>
-            <p className="mt-0.5 text-xs text-[#8f9aa3]">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               Live Spit sensor, expected model build, and Environment Canada
               marine hazards — kept separate.
             </p>
           </div>
 
-          <div className="shrink-0 md:text-right">
-            <p className="font-mono text-[10px] font-semibold tracking-[0.08em] text-[#f3f5f4] uppercase">
-              Snapshot {formatVancouverTime(snapshot.fetchedAt)}
-            </p>
-            <div className="mt-1.5 flex items-center gap-3.5 font-mono text-[9px] font-semibold tracking-[0.08em] text-[#8f9aa3] uppercase md:justify-end">
-              <span className="inline-flex items-center gap-1.5">
-                <span className="size-1.5 rounded-full bg-[#5ecde1]" />
-                Observed
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <span className="size-1.5 rounded-full bg-[#c3cbd1]" />
-                Model
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <span className="size-1.5 rounded-full bg-[#e8b84a]" />
-                Marine
-              </span>
+          <div className="flex items-start justify-between gap-6 md:items-center">
+            <div className="shrink-0 md:text-right">
+              <p className="font-mono text-[10px] font-semibold tracking-[0.08em] text-foreground uppercase">
+                Snapshot {formatVancouverTime(snapshot.fetchedAt)}
+              </p>
+              <div className="mt-1.5 flex items-center gap-3.5 font-mono text-[9px] font-semibold tracking-[0.08em] text-muted-foreground uppercase md:justify-end">
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="size-1.5 rounded-full bg-observed" />
+                  Observed
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="size-1.5 rounded-full bg-model" />
+                  Model
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="size-1.5 rounded-full bg-marine" />
+                  Marine
+                </span>
+              </div>
             </div>
+            <ThemeSwitch />
           </div>
         </header>
 
         <div className="grid min-h-0 flex-1 gap-6 min-[1440px]:grid-cols-[minmax(0,824px)_minmax(0,528px)]">
-          <section className="flex min-h-0 flex-col gap-3.5 bg-[#0e1113] p-5 min-[1440px]:h-[560px]">
+          <section className="flex min-h-0 flex-col gap-3.5 bg-card p-5 min-[1440px]:h-[560px]">
             <div className="flex min-h-[42px] items-start justify-between gap-4">
               <div>
-                <p className="font-mono text-[9px] font-semibold tracking-[0.12em] text-[#5ecde1] uppercase">
+                <p className="font-mono text-[9px] font-semibold tracking-[0.12em] text-observed uppercase">
                   Observed · Spit sensor
                 </p>
                 <h2 className="mt-0.5 text-[19px] leading-tight font-semibold">
@@ -95,8 +99,8 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
                 <p
                   className={`inline-flex items-center gap-2 px-2.5 py-2 font-mono text-[9px] font-semibold tracking-[0.06em] uppercase ${
                     reading.stale
-                      ? "bg-[#e8b84a]/10 text-[#e8b84a]"
-                      : "bg-[#5ecde1]/10 text-[#5ecde1]"
+                      ? "bg-marine/10 text-marine"
+                      : "bg-observed/10 text-observed"
                   }`}
                 >
                   <span className="size-1.5 rounded-full bg-current" />
@@ -107,15 +111,15 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
             </div>
 
             <div className="grid min-h-[118px] gap-5 md:grid-cols-[260px_minmax(0,1fr)]">
-              <div className="flex min-h-[102px] flex-col justify-center border-l-2 border-[#5ecde1] bg-[#5ecde1]/5 px-3.5 py-2.5">
-                <p className="font-mono text-[9px] font-semibold tracking-[0.13em] text-[#5ecde1] uppercase">
+              <div className="flex min-h-[102px] flex-col justify-center border-l-2 border-observed bg-observed/5 px-3.5 py-2.5">
+                <p className="font-mono text-[9px] font-semibold tracking-[0.13em] text-observed uppercase">
                   Average
                 </p>
                 <p className="mt-1 flex items-end gap-2 font-mono tabular-nums">
                   <span className="text-6xl leading-[0.9] font-medium tracking-[-0.055em]">
                     {formatKnots(reading?.averageKnots, 1)}
                   </span>
-                  <span className="text-base leading-none font-semibold text-[#5ecde1]">
+                  <span className="text-base leading-none font-semibold text-observed">
                     kt
                   </span>
                 </p>
@@ -124,7 +128,7 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
               <div className="flex min-w-0 flex-col justify-center gap-3">
                 <dl className="grid grid-cols-3 gap-4">
                   <div>
-                    <dt className="font-mono text-[8px] font-semibold tracking-[0.1em] text-[#8f9aa3] uppercase">
+                    <dt className="font-mono text-[8px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
                       Gust
                     </dt>
                     <dd className="mt-1 font-mono text-lg tabular-nums">
@@ -132,7 +136,7 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
                     </dd>
                   </div>
                   <div>
-                    <dt className="font-mono text-[8px] font-semibold tracking-[0.1em] text-[#8f9aa3] uppercase">
+                    <dt className="font-mono text-[8px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
                       Lull
                     </dt>
                     <dd className="mt-1 font-mono text-lg tabular-nums">
@@ -140,7 +144,7 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
                     </dd>
                   </div>
                   <div>
-                    <dt className="font-mono text-[8px] font-semibold tracking-[0.1em] text-[#8f9aa3] uppercase">
+                    <dt className="font-mono text-[8px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
                       Direction
                     </dt>
                     <dd className="mt-1 font-mono text-lg tabular-nums">
@@ -152,8 +156,8 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
                 <p
                   className={`flex min-h-8 items-center border-l-2 px-3 text-[11px] font-medium ${
                     reading?.stale
-                      ? "border-[#e8b84a] bg-[#e8b84a]/5 text-[#e8b84a]"
-                      : "border-[#5ecde1] bg-[#5ecde1]/5 text-[#8f9aa3]"
+                      ? "border-marine bg-marine/5 text-marine"
+                      : "border-observed bg-observed/5 text-muted-foreground"
                   }`}
                 >
                   {reading?.stale
@@ -165,22 +169,22 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
               </div>
             </div>
 
-            <div className="flex min-h-[260px] flex-1 flex-col border border-[#2a3035] bg-[#0b0e10] px-4 pt-3.5 pb-2">
+            <div className="flex min-h-[260px] flex-1 flex-col border border-border bg-inset px-4 pt-3.5 pb-2">
               <div className="flex min-h-6 items-center justify-between gap-4">
-                <p className="font-mono text-[9px] font-semibold tracking-[0.1em] text-[#8f9aa3] uppercase">
+                <p className="font-mono text-[9px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
                   Wind today · knots
                 </p>
-                <div className="flex items-center gap-3.5 font-mono text-[8px] text-[#8f9aa3] uppercase">
+                <div className="flex items-center gap-3.5 font-mono text-[8px] text-muted-foreground uppercase">
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="h-0.5 w-2.5 bg-[#5ecde1]" />
+                    <span className="h-0.5 w-2.5 bg-observed" />
                     Avg
                   </span>
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="h-px w-2.5 bg-[#f3f5f4]" />
+                    <span className="h-px w-2.5 bg-foreground" />
                     Gust
                   </span>
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="h-px w-2.5 bg-[#8f9aa3]" />
+                    <span className="h-px w-2.5 bg-muted-foreground" />
                     Lull
                   </span>
                 </div>
@@ -188,24 +192,24 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
               {snapshot.observation.ok ? (
                 <ObservedWindChartLazy samples={chartSamples} />
               ) : (
-                <div className="flex flex-1 items-center justify-center text-sm text-[#8f9aa3]">
+                <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
                   Chart unavailable until the Spit sensor loads.
                 </div>
               )}
             </div>
           </section>
 
-          <section className="flex min-h-0 flex-col gap-3 bg-[#0e1113] p-5 min-[1440px]:h-[560px]">
+          <section className="flex min-h-0 flex-col gap-3 bg-card p-5 min-[1440px]:h-[560px]">
             <div className="flex min-h-[42px] items-start justify-between gap-4">
               <div>
-                <p className="font-mono text-[9px] font-semibold tracking-[0.12em] text-[#c3cbd1] uppercase">
+                <p className="font-mono text-[9px] font-semibold tracking-[0.12em] text-model uppercase">
                   Forecast · Open-Meteo
                 </p>
                 <h2 className="mt-0.5 text-[19px] leading-tight font-semibold">
                   Expected build
                 </h2>
               </div>
-              <p className="font-mono text-[9px] font-semibold tracking-[0.08em] text-[#8f9aa3] uppercase">
+              <p className="font-mono text-[9px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
                 Model, not observed
               </p>
             </div>
@@ -214,10 +218,10 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
               <>
                 <div className="flex min-h-[76px] items-center gap-4">
                   <p className="flex w-36 shrink-0 items-end gap-1.5 font-mono tabular-nums">
-                    <span className="text-4xl leading-none font-medium tracking-[-0.04em] text-[#c3cbd1]">
+                    <span className="text-4xl leading-none font-medium tracking-[-0.04em] text-model">
                       {formatKnots(forecast.current.averageKnots, 1)}
                     </span>
-                    <span className="text-[13px] leading-none text-[#8f9aa3]">
+                    <span className="text-[13px] leading-none text-muted-foreground">
                       kt
                     </span>
                   </p>
@@ -227,7 +231,7 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
                         ? `${degreesToCompass(forecast.current.directionDegrees)} · ${Math.round(forecast.current.directionDegrees)}°`
                         : "Direction unavailable"}
                     </p>
-                    <p className="mt-1 font-mono text-[8px] tracking-[0.06em] text-[#8f9aa3] uppercase">
+                    <p className="mt-1 font-mono text-[8px] tracking-[0.06em] text-muted-foreground uppercase">
                       Valid{" "}
                       {formatVancouverTime(forecast.current.observedOrValidAt)}{" "}
                       · 15-min model
@@ -237,7 +241,7 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
 
                 <div className="flex min-h-[300px] flex-1 flex-col gap-1.5">
                   <div className="flex min-h-[30px] items-center justify-between gap-4">
-                    <p className="font-mono text-[9px] font-semibold tracking-[0.08em] text-[#8f9aa3] uppercase">
+                    <p className="font-mono text-[9px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
                       Expected peak
                     </p>
                     {timeline.peak ? (
@@ -259,21 +263,26 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
                       return (
                         <div
                           key={hour.validAt}
-                          className={`flex min-h-8 flex-1 items-center gap-3 px-2 ${
-                            isPeak ? "bg-[#c3cbd1]/5" : ""
+                          className={`flex h-8 shrink-0 items-center gap-3 px-2 ${
+                            isPeak ? "bg-model/5" : ""
                           }`}
                         >
                           <p
                             className={`w-7 shrink-0 font-mono text-[9px] font-semibold ${
-                              isPeak ? "text-[#f3f5f4]" : "text-[#8f9aa3]"
+                              isPeak
+                                ? "text-foreground"
+                                : "text-muted-foreground"
                             }`}
                           >
-                            {hourFormatter.format(new Date(hour.validAt))}
+                            {hourFormatter
+                              .format(new Date(hour.validAt))
+                              .replace(" a.m.", "A")
+                              .replace(" p.m.", "P")}
                           </p>
-                          <div className="h-[7px] min-w-0 flex-1 bg-[#242a2e]">
+                          <div className="h-[7px] min-w-0 flex-1 bg-track">
                             <div
                               className={`h-full ${
-                                isPeak ? "bg-[#f3f5f4]" : "bg-[#c3cbd1]"
+                                isPeak ? "bg-foreground" : "bg-model"
                               }`}
                               style={{
                                 width: `${Math.min((hour.averageKnots / 20) * 100, 100)}%`,
@@ -283,8 +292,8 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
                           <p
                             className={`w-[86px] shrink-0 text-right font-mono text-[9px] tabular-nums ${
                               isPeak
-                                ? "font-semibold text-[#f3f5f4]"
-                                : "text-[#c3cbd1]"
+                                ? "font-semibold text-foreground"
+                                : "text-model"
                             }`}
                           >
                             {formatKnots(hour.averageKnots, 0)} kt / g
@@ -294,14 +303,14 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
                       )
                     })
                   ) : (
-                    <div className="flex flex-1 items-center justify-center text-sm text-[#8f9aa3]">
+                    <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
                       No upcoming hourly forecast available.
                     </div>
                   )}
                 </div>
               </>
             ) : (
-              <div className="flex flex-1 items-center justify-center text-sm text-[#8f9aa3]">
+              <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
                 {snapshot.forecast.ok
                   ? "No forecast data."
                   : snapshot.forecast.error}
@@ -311,19 +320,19 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
         </div>
 
         <div className="grid gap-6 min-[1440px]:h-[188px] min-[1440px]:grid-cols-[minmax(0,824px)_minmax(0,528px)]">
-          <section className="grid gap-5 bg-[#0e1113] p-5 md:grid-cols-[minmax(0,500px)_minmax(0,1fr)]">
+          <section className="grid gap-5 bg-card p-5 md:grid-cols-[minmax(0,500px)_minmax(0,1fr)]">
             <div className="min-w-0">
-              <p className="font-mono text-[9px] font-semibold tracking-[0.12em] text-[#e8b84a] uppercase">
+              <p className="font-mono text-[9px] font-semibold tracking-[0.12em] text-marine uppercase">
                 Marine · Environment Canada
               </p>
               <h2 className="mt-1 text-lg font-semibold">Howe Sound marine</h2>
-              <p className="mt-2 line-clamp-2 text-[13px] leading-[1.35] text-[#c3cbd1]">
+              <p className="mt-2 line-clamp-2 text-[13px] leading-[1.35] text-model">
                 {marine?.forecastText ??
                   (snapshot.marine.ok
                     ? "Marine forecast unavailable."
                     : snapshot.marine.error)}
               </p>
-              <p className="mt-2 font-mono text-[8px] tracking-[0.05em] text-[#8f9aa3] uppercase">
+              <p className="mt-2 font-mono text-[8px] tracking-[0.05em] text-muted-foreground uppercase">
                 {marine?.issuedAt
                   ? `Issued ${marine.issuedAt}`
                   : "Issue time unavailable"}
@@ -334,7 +343,9 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
               <div className="flex items-center gap-2">
                 <span
                   className={`text-base ${
-                    marine?.hasThunderRisk ? "text-[#e8b84a]" : "text-[#8f9aa3]"
+                    marine?.hasThunderRisk
+                      ? "text-marine"
+                      : "text-muted-foreground"
                   }`}
                   aria-hidden="true"
                 >
@@ -343,20 +354,20 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
                 <div>
                   <p
                     className={`font-mono text-[9px] font-semibold tracking-[0.06em] uppercase ${
-                      marine?.hasThunderRisk
-                        ? "text-[#e8b84a]"
-                        : "text-[#c3cbd1]"
+                      marine?.hasThunderRisk ? "text-marine" : "text-model"
                     }`}
                   >
                     {marine?.hasThunderRisk
                       ? "Thunderstorm risk"
                       : "No thunderstorm risk"}
                   </p>
-                  <p className="text-[11px] text-[#8f9aa3]">Marine forecast</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Marine forecast
+                  </p>
                 </div>
               </div>
-              <p className="flex items-center gap-2 text-[11px] text-[#c3cbd1]">
-                <span className="text-[#8f9aa3]" aria-hidden="true">
+              <p className="flex items-center gap-2 text-[11px] text-model">
+                <span className="text-muted-foreground" aria-hidden="true">
                   ○
                 </span>
                 {marine?.hasWarning
@@ -366,10 +377,10 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
             </div>
           </section>
 
-          <section className="flex flex-col gap-2.5 bg-[#0e1113] p-5">
+          <section className="flex flex-col gap-2.5 bg-card p-5">
             <div className="flex min-h-[50px] items-center gap-3.5">
               <div className="min-w-0 flex-1">
-                <p className="font-mono text-[9px] font-semibold tracking-[0.1em] text-[#8f9aa3] uppercase">
+                <p className="font-mono text-[9px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
                   Live camera
                 </p>
                 <p className="mt-0.5 text-[13px] font-medium">
@@ -380,20 +391,20 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
                 href="https://www.youtube.com/watch?v=TDtXBtgQ-y0"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex h-10 shrink-0 items-center justify-center gap-2 bg-[#f3f5f4] px-3.5 font-mono text-[9px] font-bold tracking-[0.06em] text-[#090b0c] uppercase transition-colors hover:bg-[#c3cbd1] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5ecde1]"
+                className="inline-flex h-10 shrink-0 items-center justify-center gap-2 bg-primary px-3.5 font-mono text-[9px] font-bold tracking-[0.06em] text-primary-foreground uppercase transition-colors hover:bg-primary/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 <span aria-hidden="true">▶</span>
                 Open on YouTube
               </a>
             </div>
 
-            <p className="font-mono text-[8px] tracking-[0.035em] text-[#8f9aa3] uppercase">
+            <p className="font-mono text-[8px] tracking-[0.035em] text-muted-foreground uppercase">
               Sources ·{" "}
               <a
                 href="https://squamishwindsports.com/"
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-[#f3f5f4]"
+                className="hover:text-foreground"
               >
                 SWS Spit sensor
               </a>{" "}
@@ -402,7 +413,7 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
                 href="https://open-meteo.com/"
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-[#f3f5f4]"
+                className="hover:text-foreground"
               >
                 Open-Meteo
               </a>{" "}
@@ -411,12 +422,12 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
                 href="https://weather.gc.ca/marine/forecast_e.html?mapID=02&siteID=06400"
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-[#f3f5f4]"
+                className="hover:text-foreground"
               >
                 EC Howe Sound
               </a>
             </p>
-            <p className="max-w-md text-[10px] leading-[1.3] text-[#8f9aa3]">
+            <p className="max-w-md text-[10px] leading-[1.3] text-muted-foreground">
               Personal reference, not advice. Observation schema and
               availability may change without notice.
             </p>
