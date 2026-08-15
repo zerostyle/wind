@@ -1,4 +1,5 @@
 import { ThemeSwitch } from "@/components/theme-switch"
+import { ConditionsStrip } from "@/components/wind/conditions-strip"
 import { ObservationDateNav } from "@/components/wind/observation-date-nav"
 import { ObservedWindChartLazy } from "@/components/wind/observed-wind-chart-lazy"
 import {
@@ -95,8 +96,13 @@ export function WindDashboard({
           </div>
         </header>
 
+        <ConditionsStrip
+          temperatureCelsius={reading?.temperatureCelsius}
+          tide={snapshot.tide}
+        />
+
         <div className="grid min-h-0 flex-1 gap-6 min-[1440px]:grid-cols-[minmax(0,824px)_minmax(0,528px)]">
-          <section className="flex min-h-0 flex-col gap-3.5 bg-card p-5 min-[1440px]:h-[560px]">
+          <section className="flex min-h-0 flex-col gap-3.5 bg-card p-5 min-[1440px]:h-[464px]">
             <div className="flex min-h-[42px] flex-col gap-3 min-[640px]:flex-row min-[640px]:items-start min-[640px]:justify-between">
               <div>
                 <p className="font-mono text-[9px] font-semibold tracking-[0.12em] text-observed uppercase">
@@ -224,7 +230,7 @@ export function WindDashboard({
             </div>
           </section>
 
-          <section className="flex min-h-0 flex-col gap-3 bg-card p-5 min-[1440px]:h-[560px]">
+          <section className="flex min-h-0 flex-col gap-3 bg-card p-5 min-[1440px]:h-[464px]">
             <div className="flex min-h-[42px] items-start justify-between gap-4">
               <div>
                 <p className="font-mono text-[9px] font-semibold tracking-[0.12em] text-model uppercase">
@@ -450,6 +456,15 @@ export function WindDashboard({
                 className="hover:text-foreground"
               >
                 EC Howe Sound
+              </a>{" "}
+              ·{" "}
+              <a
+                href="https://www.tides.gc.ca/en/stations/07811"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-foreground"
+              >
+                CHS Squamish Inner
               </a>
             </p>
             <p className="max-w-md text-[10px] leading-[1.3] text-muted-foreground">
