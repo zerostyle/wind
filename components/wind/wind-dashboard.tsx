@@ -53,8 +53,8 @@ export function WindDashboard({
       : peakStart
   return (
     <main className="min-h-svh overflow-x-hidden bg-background text-foreground">
-      <div className="mx-auto flex min-h-svh w-full max-w-[1440px] flex-col gap-4 px-5 py-6 min-[1440px]:h-[900px] min-[1440px]:min-h-[900px] md:px-8">
-        <header className="flex min-h-[72px] flex-col justify-between gap-4 md:flex-row md:items-center">
+      <div className="mx-auto flex min-h-svh w-full max-w-[1440px] flex-col gap-4 py-6 min-[1440px]:min-h-[900px] md:px-8">
+        <header className="flex min-h-[72px] flex-col justify-between gap-4 px-5 md:flex-row md:items-center md:px-0">
           <div className="min-w-0">
             <p className="font-mono text-[10px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
               Squamish · Howe Sound
@@ -93,8 +93,8 @@ export function WindDashboard({
         </header>
 
         <div className="grid min-h-0 flex-1 gap-6 min-[1440px]:grid-cols-[minmax(0,824px)_minmax(0,528px)]">
-          <section className="flex min-h-0 flex-col gap-3.5 bg-card p-5 min-[1440px]:h-[464px]">
-            <div className="flex min-h-[42px] flex-col gap-3 min-[640px]:flex-row min-[640px]:items-start min-[640px]:justify-between">
+          <section className="flex min-h-0 flex-col gap-3.5 bg-card p-5">
+            <div className="flex shrink-0 flex-col gap-3 min-[640px]:flex-row min-[640px]:items-center min-[640px]:justify-between">
               <div>
                 <p className="font-mono text-[9px] font-semibold tracking-[0.12em] text-observed uppercase">
                   Observed · Spit sensor
@@ -103,14 +103,14 @@ export function WindDashboard({
                   {dayTitle}
                 </h2>
               </div>
-              <div className="flex flex-col items-start gap-2 min-[640px]:items-end">
+              <div className="flex flex-col items-start gap-2 min-[640px]:flex-row min-[640px]:items-center min-[640px]:justify-end">
                 <ObservationDateNav
                   selectedDate={observationDate}
                   todayDate={todayDate}
                 />
                 {reading ? (
                   <p
-                    className={`inline-flex items-center gap-2 px-2.5 py-2 font-mono text-[9px] font-semibold tracking-[0.06em] uppercase ${
+                    className={`inline-flex h-8 items-center gap-2 px-2.5 font-mono text-[9px] font-semibold tracking-[0.06em] uppercase ${
                       isArchived
                         ? "bg-muted text-muted-foreground"
                         : reading.stale
@@ -130,7 +130,7 @@ export function WindDashboard({
               </div>
             </div>
 
-            <div className="grid min-h-[118px] gap-5 md:grid-cols-[260px_minmax(0,1fr)]">
+            <div className="grid shrink-0 gap-5 md:grid-cols-[260px_minmax(0,1fr)]">
               <div className="flex min-h-[102px] flex-col justify-center border-l-2 border-observed bg-observed/5 px-3.5 py-2.5">
                 <p className="font-mono text-[9px] font-semibold tracking-[0.13em] text-observed uppercase">
                   {isArchived ? "Last" : "Average"}
@@ -193,7 +193,7 @@ export function WindDashboard({
               </div>
             </div>
 
-            <div className="flex min-h-[260px] flex-1 flex-col border border-border bg-inset px-4 pt-3.5 pb-2">
+            <div className="flex shrink-0 flex-col border border-border bg-inset px-4 pt-3.5 pb-2">
               <div className="flex min-h-6 items-center justify-between gap-4">
                 <p className="font-mono text-[9px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
                   {isArchived ? "Wind that day · knots" : "Wind today · knots"}
@@ -230,7 +230,7 @@ export function WindDashboard({
             </div>
           </section>
 
-          <section className="flex min-h-0 flex-col gap-3 bg-card p-5 min-[1440px]:h-[464px]">
+          <section className="flex min-h-0 flex-col gap-3 bg-card p-5">
             <div className="flex min-h-[42px] items-start justify-between gap-4">
               <div>
                 <p className="font-mono text-[9px] font-semibold tracking-[0.12em] text-model uppercase">
@@ -350,7 +350,7 @@ export function WindDashboard({
           </section>
         </div>
 
-        <div className="grid gap-6 min-[1440px]:h-[188px] min-[1440px]:grid-cols-[minmax(0,824px)_minmax(0,528px)]">
+        <div className="grid gap-6 min-[1440px]:grid-cols-[minmax(0,824px)_minmax(0,528px)]">
           <section className="grid gap-5 bg-card p-5 md:grid-cols-[minmax(0,500px)_minmax(0,1fr)]">
             <div className="min-w-0">
               <p className="font-mono text-[9px] font-semibold tracking-[0.12em] text-marine uppercase">

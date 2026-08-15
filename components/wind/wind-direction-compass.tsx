@@ -12,10 +12,10 @@ export function WindDirectionCompass({ degrees }: WindDirectionCompassProps) {
   const rotation = hasDirection ? flowHeadingDegrees(degrees) : 0
 
   return (
-    <div className="flex flex-col items-start gap-1">
+    <div className="flex items-center gap-2">
       <svg
         viewBox="0 0 40 40"
-        className="size-10 text-observed"
+        className="size-8 shrink-0 text-observed"
         aria-hidden="true"
       >
         <circle
