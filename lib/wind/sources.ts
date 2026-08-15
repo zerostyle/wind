@@ -1,5 +1,6 @@
-import { isStaleObservation } from "./freshness"
+import { isStaleObservation, vancouverDateKey } from "./freshness"
 import { getKiteHint } from "./kite-hint"
+import { swsObservationUrl } from "./observation-date"
 import { newestSample, parseSwsPayload } from "./parse-sws"
 import type {
   ForecastHour,
@@ -13,32 +14,26 @@ import type {
 } from "./types"
 
 const REVALIDATE_SECONDS = 180
+const ARCHIVED_REVALIDATE_SECONDS = 86_400
 const SPIT_LAT = 49.6868
 const SPIT_LON = -123.1784
 const VANCOUVER_TZ = "America/Vancouver"
 
-const SWS_URL = "https://squamishwindsports.com/wind-data/getmet.php"
 const OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
 const EC_RSS_URL = "https://weather.gc.ca/rss/marine/06400_e.xml"
 const EC_HTML_URL =
   "https://weather.gc.ca/marine/forecast_e.html?mapID=02&siteID=06400"
 
-function vancouverDateParam(now: Date): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: VANCOUVER_TZ,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(now)
-}
-
 function toIso(date: Date): string {
   return date.toISOString()
 }
 
-async function fetchJson<T>(url: string): Promise<T> {
+async function fetchJson<T>(
+  url: string,
+  revalidateSeconds = REVALIDATE_SECONDS
+): Promise<T> {
   const response = await fetch(url, {
-    next: { revalidate: REVALIDATE_SECONDS },
+    next: { revalidate: revalidateSeconds },
     headers: {
       Accept: "application/json",
       "User-Agent": "wind-spit-conditions/0.1 (personal; Squamish kiteboarding)",
@@ -102,14 +97,17 @@ export function buildObservationLayer(
 }
 
 export async function fetchSwsObservation(
-  now: Date = new Date()
+  now: Date = new Date(),
+  reqdate: string = vancouverDateKey(now)
 ): Promise<SourceResult<ObservationLayer>> {
   const fetchedAt = new Date()
+  const isArchived = reqdate !== vancouverDateKey(now)
 
   try {
-    const reqdate = vancouverDateParam(now)
-    const url = `${SWS_URL}?wind_src=spit&reqdate=${reqdate}&reqtime=0`
-    const payload = await fetchJson<SwsPayload>(url)
+    const payload = await fetchJson<SwsPayload>(
+      swsObservationUrl(reqdate),
+      isArchived ? ARCHIVED_REVALIDATE_SECONDS : REVALIDATE_SECONDS
+    )
     return {
       ok: true,
       data: buildObservationLayer(payload, fetchedAt, now),
@@ -325,18 +323,22 @@ export async function fetchMarineHazard(): Promise<SourceResult<MarineHazard>> {
 }
 
 export async function getWindSnapshot(
-  now: Date = new Date()
+  now: Date = new Date(),
+  reqdate: string = vancouverDateKey(now)
 ): Promise<WindSnapshot> {
+  const isArchived = reqdate !== vancouverDateKey(now)
   const [observation, forecast, marine] = await Promise.all([
-    fetchSwsObservation(now),
+    fetchSwsObservation(now, reqdate),
     fetchOpenMeteoForecast(),
     fetchMarineHazard(),
   ])
 
   const marineData = marine.ok ? marine.data : null
-  const kiteHint = observation.ok
-    ? getKiteHint(observation.data.latest, marineData)
-    : getKiteHint(null, marineData)
+  const kiteHint = isArchived
+    ? null
+    : observation.ok
+      ? getKiteHint(observation.data.latest, marineData)
+      : getKiteHint(null, marineData)
 
   return {
     fetchedAt: toIso(now),

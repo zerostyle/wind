@@ -17,7 +17,7 @@ export function ThemeSwitch() {
   const isLight = mounted && resolvedTheme === "light"
 
   return (
-    <div className="inline-flex items-center gap-2">
+    <div className="inline-flex items-center gap-2.5">
       <RiMoonLine
         className={`size-3.5 ${isLight ? "text-muted-foreground" : "text-foreground"}`}
         aria-hidden="true"

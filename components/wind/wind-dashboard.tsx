@@ -1,4 +1,5 @@
 import { ThemeSwitch } from "@/components/theme-switch"
+import { ObservationDateNav } from "@/components/wind/observation-date-nav"
 import { ObservedWindChartLazy } from "@/components/wind/observed-wind-chart-lazy"
 import {
   degreesToCompass,
@@ -6,12 +7,15 @@ import {
   formatVancouverTime,
 } from "@/lib/wind/format"
 import { getForecastTimeline } from "@/lib/wind/forecast-timeline"
+import { formatObservationDayTitle } from "@/lib/wind/observation-date"
 import type { WindSnapshot } from "@/lib/wind/types"
 import type { ChartSample } from "./observed-wind-chart"
 
 type WindDashboardProps = {
   snapshot: WindSnapshot
   chartSamples: ChartSample[]
+  observationDate: string
+  todayDate: string
 }
 
 const hourFormatter = new Intl.DateTimeFormat("en-CA", {
@@ -20,11 +24,18 @@ const hourFormatter = new Intl.DateTimeFormat("en-CA", {
   hour12: true,
 })
 
-export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
+export function WindDashboard({
+  snapshot,
+  chartSamples,
+  observationDate,
+  todayDate,
+}: WindDashboardProps) {
   const observation = snapshot.observation.ok ? snapshot.observation.data : null
   const forecast = snapshot.forecast.ok ? snapshot.forecast.data : null
   const marine = snapshot.marine.ok ? snapshot.marine.data : null
   const reading = observation?.latest ?? null
+  const isArchived = observationDate !== todayDate
+  const dayTitle = formatObservationDayTitle(observationDate, todayDate)
   const timeline = forecast
     ? getForecastTimeline(forecast.hourly, snapshot.fetchedAt)
     : { hours: [], peak: null }
@@ -86,34 +97,46 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
 
         <div className="grid min-h-0 flex-1 gap-6 min-[1440px]:grid-cols-[minmax(0,824px)_minmax(0,528px)]">
           <section className="flex min-h-0 flex-col gap-3.5 bg-card p-5 min-[1440px]:h-[560px]">
-            <div className="flex min-h-[42px] items-start justify-between gap-4">
+            <div className="flex min-h-[42px] flex-col gap-3 min-[640px]:flex-row min-[640px]:items-start min-[640px]:justify-between">
               <div>
                 <p className="font-mono text-[9px] font-semibold tracking-[0.12em] text-observed uppercase">
                   Observed · Spit sensor
                 </p>
                 <h2 className="mt-0.5 text-[19px] leading-tight font-semibold">
-                  Today&apos;s observed wind
+                  {dayTitle}
                 </h2>
               </div>
-              {reading ? (
-                <p
-                  className={`inline-flex items-center gap-2 px-2.5 py-2 font-mono text-[9px] font-semibold tracking-[0.06em] uppercase ${
-                    reading.stale
-                      ? "bg-marine/10 text-marine"
-                      : "bg-observed/10 text-observed"
-                  }`}
-                >
-                  <span className="size-1.5 rounded-full bg-current" />
-                  {reading.stale ? "Stale" : "Current"} ·{" "}
-                  {formatVancouverTime(reading.observedOrValidAt)}
-                </p>
-              ) : null}
+              <div className="flex flex-col items-start gap-2 min-[640px]:items-end">
+                <ObservationDateNav
+                  selectedDate={observationDate}
+                  todayDate={todayDate}
+                />
+                {reading ? (
+                  <p
+                    className={`inline-flex items-center gap-2 px-2.5 py-2 font-mono text-[9px] font-semibold tracking-[0.06em] uppercase ${
+                      isArchived
+                        ? "bg-muted text-muted-foreground"
+                        : reading.stale
+                          ? "bg-marine/10 text-marine"
+                          : "bg-observed/10 text-observed"
+                    }`}
+                  >
+                    <span className="size-1.5 rounded-full bg-current" />
+                    {isArchived
+                      ? "Archived"
+                      : reading.stale
+                        ? "Stale"
+                        : "Current"}{" "}
+                    · {formatVancouverTime(reading.observedOrValidAt)}
+                  </p>
+                ) : null}
+              </div>
             </div>
 
             <div className="grid min-h-[118px] gap-5 md:grid-cols-[260px_minmax(0,1fr)]">
               <div className="flex min-h-[102px] flex-col justify-center border-l-2 border-observed bg-observed/5 px-3.5 py-2.5">
                 <p className="font-mono text-[9px] font-semibold tracking-[0.13em] text-observed uppercase">
-                  Average
+                  {isArchived ? "Last" : "Average"}
                 </p>
                 <p className="mt-1 flex items-end gap-2 font-mono tabular-nums">
                   <span className="text-6xl leading-[0.9] font-medium tracking-[-0.055em]">
@@ -155,16 +178,18 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
 
                 <p
                   className={`flex min-h-8 items-center border-l-2 px-3 text-[11px] font-medium ${
-                    reading?.stale
+                    !isArchived && reading?.stale
                       ? "border-marine bg-marine/5 text-marine"
                       : "border-observed bg-observed/5 text-muted-foreground"
                   }`}
                 >
-                  {reading?.stale
-                    ? "Data too old for a current launch decision."
-                    : snapshot.observation.ok
-                      ? "Live sensor reading is within the freshness window."
-                      : snapshot.observation.error}
+                  {isArchived
+                    ? "Archived Spit sensor day — not a live launch reading."
+                    : reading?.stale
+                      ? "Data too old for a current launch decision."
+                      : snapshot.observation.ok
+                        ? "Live sensor reading is within the freshness window."
+                        : snapshot.observation.error}
                 </p>
               </div>
             </div>
@@ -172,7 +197,7 @@ export function WindDashboard({ snapshot, chartSamples }: WindDashboardProps) {
             <div className="flex min-h-[260px] flex-1 flex-col border border-border bg-inset px-4 pt-3.5 pb-2">
               <div className="flex min-h-6 items-center justify-between gap-4">
                 <p className="font-mono text-[9px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
-                  Wind today · knots
+                  {isArchived ? "Wind that day · knots" : "Wind today · knots"}
                 </p>
                 <div className="flex items-center gap-3.5 font-mono text-[8px] text-muted-foreground uppercase">
                   <span className="inline-flex items-center gap-1.5">
